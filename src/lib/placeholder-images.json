@@ -1,3 +1,22 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "dashboard-hero",
+      "description": "A calming image of a pregnant woman in a natural setting for the dashboard hero section.",
+      "imageUrl": "https://images.unsplash.com/photo-1645207858823-2d1711f7c141?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8cHJlZ25hbnQlMjB3b21hbiUyMG5hdHVyZXxlbnwwfHx8fDE3NjI5NjgwNDF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "pregnant woman nature"
+    },
+    {
+      "id": "map-placeholder",
+      "description": "A placeholder image of a map showing streets and pins.",
+      "imageUrl": "https://images.unsplash.com/photo-1619468129361-605ebea04b44?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxjaXR5JTIwbWFwfGVufDB8fHx8MTc2MjkyNjg0M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "city map"
+    },
+    {
+      "id": "qr-code-placeholder",
+      "description": "A placeholder image of a QR code for PIX payments.",
+      "imageUrl": "https://images.unsplash.com/photo-1652345408103-7fbe3dd59324?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxxciUyMGNvZGV8ZW58MHx8fHwxNzYyODk0MTgzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "qr code"
+    }
+  ]
 }
