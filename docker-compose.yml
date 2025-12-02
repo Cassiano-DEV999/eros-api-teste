@@ -1,6 +1,22 @@
 version: '3.8'
 
 services:
+  next-app:
+    build: .
+    container_name: eros-next
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://postgres:postgres123@postgres:5432/eros_db
+      PORT: 3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - eros-net
+
   postgres:
     image: postgres:16-alpine
     container_name: eros-postgres
@@ -14,11 +30,15 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - eros-net
+
+networks:
+  eros-net:
 
 volumes:
   postgres_data:
-    driver: local
