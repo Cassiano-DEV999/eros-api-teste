@@ -1,0 +1,199 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  phone     String?
+  userType  UserType @default(PREGNANT)
+  shareCode String?  @unique // Código único para gestantes compartilharem
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  appointments       Appointment[]
+  treatments         Treatment[]
+  payments           Payment[]
+  supportNetwork     SupportNetwork[] @relation("PregnantUser") // Rede de apoio da gestante
+  supportingPregnant SupportNetwork?  @relation("SupportUser") // Gestante que este usuário apoia
+
+  @@map("users")
+}
+
+enum UserType {
+  PREGNANT // Gestante
+  SUPPORT_NETWORK // Rede de apoio
+}
+
+model SupportNetwork {
+  id           String        @id @default(cuid())
+  pregnantId   String // ID da gestante
+  supportId    String        @unique // ID do membro da rede de apoio (1:1)
+  relationship String // Relação: mãe, pai, irmã, amiga, etc
+  status       SupportStatus @default(ACTIVE)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  pregnant User @relation("PregnantUser", fields: [pregnantId], references: [id], onDelete: Cascade)
+  support  User @relation("SupportUser", fields: [supportId], references: [id], onDelete: Cascade)
+
+  @@map("support_network")
+}
+
+enum SupportStatus {
+  ACTIVE
+  INACTIVE
+  PENDING
+}
+
+model Doctor {
+  id          String   @id @default(cuid())
+  name        String
+  email       String   @unique
+  specialty   String
+  crm         String   @unique
+  avatar      String?
+  bio         String?
+  rating      Float    @default(0)
+  reviewCount Int      @default(0)
+  experience  Int      @default(0)
+  price       Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  appointments Appointment[]
+  slots        DoctorSlot[]
+
+  @@map("doctors")
+}
+
+model DoctorSlot {
+  id        String   @id @default(cuid())
+  doctorId  String
+  date      DateTime
+  time      String
+  available Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  doctor Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
+  @@unique([doctorId, date, time])
+  @@map("doctor_slots")
+}
+
+model Appointment {
+  id        String            @id @default(cuid())
+  userId    String
+  doctorId  String
+  date      DateTime
+  time      String
+  status    AppointmentStatus @default(PENDING)
+  notes     String?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  doctor  Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  payment Payment?
+
+  @@map("appointments")
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+model Treatment {
+  id        String   @id @default(cuid())
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  medications Medication[]
+  supplements Supplement[]
+
+  @@map("treatments")
+}
+
+model Medication {
+  id          String    @id @default(cuid())
+  treatmentId String
+  name        String
+  dosage      String
+  frequency   String
+  time        String
+  duration    String
+  startDate   DateTime
+  endDate     DateTime?
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  treatment Treatment @relation(fields: [treatmentId], references: [id], onDelete: Cascade)
+
+  @@map("medications")
+}
+
+model Supplement {
+  id          String    @id @default(cuid())
+  treatmentId String
+  name        String
+  dosage      String
+  frequency   String
+  time        String
+  duration    String
+  startDate   DateTime
+  endDate     DateTime?
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  treatment Treatment @relation(fields: [treatmentId], references: [id], onDelete: Cascade)
+
+  @@map("supplements")
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  userId        String
+  appointmentId String        @unique
+  amount        Float
+  method        PaymentMethod
+  status        PaymentStatus @default(PENDING)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+enum PaymentMethod {
+  CREDIT_CARD
+  DEBIT_CARD
+  PIX
+  CASH
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
