@@ -7,7 +7,7 @@
     "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
     "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
     "build": "prisma generate && NODE_ENV=production next build",
-    "start": "npx prisma migrate deploy && npx prisma db seed; next start",
+    "start": "npx prisma migrate deploy && npx prisma db seed && next start -p $PORT",
     "db:setup": "npx prisma migrate deploy && npx prisma db seed || echo 'Database setup complete'",
     "seed:safe": "npx prisma db seed || echo 'Seed skipped or already done'",
     "lint": "next lint",
